@@ -1,27 +1,62 @@
-def weather():
- from pyowm import OWM
- from pyowm.utils.config import get_default_config
+def t1():
+ import json
 
- config_dict = get_default_config()
- config_dict['language'] = 'ru'
+ with open('products2.JSON', 'r', encoding='UTF-8') as file:
+     data = json.load(file)
+     for product in data['products']:
+       print(f"Название: {product['name']} Цена: {product['price']}")
+       print(f"Вес: {product['weight']}")
+     if product['available']:
+        print("В наличии")
+     else:
+      print("Нет в наличии!")
+t1()
 
- owm = OWM('d13b1a2d35086b5bea7f3cc2879413c2')
- mgr = owm.weather_manager()
+def t2():
+    import json
 
- place = input("Введите ваш город: ")
- country = input("Введите код вашей страны: ")
- country_and_place = place + ", " + country
+    with open('products2.JSON', 'r', encoding='UTF-8') as file:
+        data = json.load(file)
+        name = input("Введите название продукта: ")
+        price = int(input("Введите цену продукта: "))
+        available = input("Доступен ли продукт (да/нет): ").lower() == 'да'
+        weight = int(input("Введите вес продукта: "))
 
- observation = mgr.weather_at_place(country_and_place)
- w = observation.weather
+    newproduct = {
+        "name": name,
+        "price": price,
+        "available": available,
+        "weight": weight
+    }
 
- status = w.detailed_status
- wind = w.wind()['speed']
- humidity = w.humidity
- temp = w.temperature('celsius')['temp']
+    data["products"].append(newproduct)
 
+    with open('products2.JSON', 'w', encoding='UTF-8') as file:
+        json.dump(data, file, indent=4)
 
- print("В городе " + place + " сейчас " + status + "\nТемпература " + str(round(temp)) + " градусов по Цельсию" + "\nВлажность составляет " + str(humidity) + "%" + "\nСкорость ветра " + str(wind) + " метров в секунду")
+    print("Итоговой файл JSON:")
+    print(json.dumps(data, indent=4))
 
-weather()
+t2()
 
+def t3():
+    import json
+    file = {}
+    with open('en-ru.txt', 'r', encoding='utf-8') as f:
+        for line in f:
+            en_word, ru_words = line.strip().split('-')
+            for ru_word in ru_words.split(','):
+                if ru_word not in file:
+                    file[ru_word] = [en_word]
+                else:
+                    file[ru_word].append(en_word)
+
+    with open('for10/ru-en.txt', 'w', encoding='utf-8') as f:
+        for ru_word in sorted(file.keys()):
+            en_words = ','.join(sorted(file[ru_word]))
+            f.write(f'{ru_word}-{en_words}\n')
+
+    with open('en-ru.json', 'w', encoding='utf-8') as f:
+        json.dump(file, f, ensure_ascii=False, indent=4)
+
+t3()
